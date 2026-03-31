@@ -1,74 +1,30 @@
-class NumberClass{
-    constructor(num = 0, isNegative = false, hasDecimal = false){
-        this.isNegative = isNegative;
-        this.hasDecimal = hasDecimal;
-
-        let whole = Math.trunc(num)
-        num -= this.whole;
-        while (num < 1)
-            num *= 10;
-
-        this.whole = whole !== 0 ? whole.toString() : "";
-        this.decimal = num !== 0 ? num.toString() : "";
-    }
-    addDigit(digit){
-        if (this.hasDecimal)
-            this.decimal += digit;
-        else   
-            this.whole += digit;
-    }
-    toString(){
-        return ((this.isNegative ? "-" : "") + (this.whole === "" ? "0" : this.whole) + (this.hasDecimal ? "."+this.decimal : ""))
-    }
-    evaluate(){
-        let whole = parseInt(this.whole);
-        let decimal = parseInt(this.decimal);
-        while (decimal >= 1)
-            decimal /= 10;
-
-        let num = whole + decimal;
-        if (this.isNegative)
-            num *= -1;
-
-        return (num);
+evaluate(left, operation, right){
+    switch(operation){
+        case "+": return (left + right);
+        case "-": return (left - right);
+        case "*": return (left * right);
+        case "/": return (left / right);
     }
 }
-class evaluationNode{
-    constructor(left, operation = "+", right = null){
-        this.left = left;
-        this.right = right;
-        this.operation = operation;
-    }
-    evaluate(){
-        if (this.right === null)
-            return (this.left);
-        switch(this.operation){
-            case "+": return (this.left.evaluate() + this.right.evaluate());
-            case "-": return (this.left.evaluate() - this.right.evaluate());
-            case "*": return (this.left.evaluate() * this.right.evaluate());
-            case "/": return (this.left.evaluate() / this.right.evaluate());
-        }
-    }
-}
-window.expressionArray = [new NumberClass()];
+window.expressionArray = ["0"];
 window.openParenthesisCount = 0;
 
 function addNum(num){
     if (expressionArray.length === 0){
-        expressionArray.push(new NumberClass(num));
+        expressionArray.push("0");
     }
-    if (expressionArray.at(-1) instanceof NumberClass){
-        expressionArray.at(-1).addDigit(num);
+    if (isFinite(expressionArray.at(-1))){
+        expressionArray.at(-1) += num;
     }
     else{
-        expressionArray.push(new NumberClass(num));
+        expressionArray.push(num.toString());
     }
     updateBar()
 }
 function operationListener(symbol){
     if (expressionArray.length === 0)
         return;
-    if (expressionArray.at(-1) instanceof NumberClass || expressionArray.at(-1) === "(" || expressionArray.at(-1) === ")"){
+    if (isFinite(expressionArray.at(-1)) || expressionArray.at(-1) === "(" || expressionArray.at(-1) === ")"){
         expressionArray.push(symbol);
     }
     else{
@@ -77,20 +33,26 @@ function operationListener(symbol){
     updateBar()
 }
 function decimalListener(){
-    if (expressionArray.at(-1) instanceof NumberClass){
-        expressionArray.at(-1).hasDecimal = !expressionArray.at(-1).hasDecimal;
-        expressionArray.at(-1).decimal = "";
+    if (isFinite(expressionArray.at(-1))){
+        let index = expressionArray.at(-1).indexOf(".");
+        if (index != -1)
+            expressionArray[expressionArray.length-1] = expressionArray.at(-1).slice(0,index);
+        else
+            expressionArray.at(-1) += ".";
     }
     else
         expressionArray.push(new NumberClass(hasDecimal = true));
     updateBar()
 }
 function plusMinusListener(){
-    expressionArray.at(-1).isNegative = !expressionArray.at(-1).isNegative;
+    if (expressionArray.at(-1).at(0) === "-")
+        expressionArray[expressionArray.length-1] = expressionArray.at(-1).charAt(0);
+    else
+        expressionArray[expressionArray.length-1] = "-" + expressionArray.at(-1);
     updateBar()
 }
 function parenthesisListener(symbol){
-    if (symbol === ")" && (openParenthesisCount === 0 || !(expressionArray.at(-1) instanceof NumberClass)))
+    if (symbol === ")" && (openParenthesisCount === 0 || !isFinite(expressionArray.at(-1))))
         return;
     if (symbol === "(")
         openParenthesisCount++;
@@ -99,7 +61,7 @@ function parenthesisListener(symbol){
     expressionArray.push(symbol);
     updateBar();
 }
-function evaluateExpression(beginning, end){
+function evaluateExpression(){
     if (beginning === "(")
         
 }
