@@ -1,4 +1,6 @@
-evaluate(left, operation, right){
+function evaluate(left, operation, right){
+    left = parseFloat(left);
+    right = parseFloat(right);
     switch(operation){
         case "+": return (left + right);
         case "-": return (left - right);
@@ -14,7 +16,10 @@ function addNum(num){
         expressionArray.push("0");
     }
     if (isFinite(expressionArray.at(-1))){
-        expressionArray.at(-1) += num;
+        if (expressionArray.at(-1).length === 1 && expressionArray.at(-1).charAt(0) === "0")
+            expressionArray[expressionArray.length-1] = num.toString();
+        else
+            expressionArray[expressionArray.length-1] += num.toString();
     }
     else{
         expressionArray.push(num.toString());
@@ -38,7 +43,7 @@ function decimalListener(){
         if (index != -1)
             expressionArray[expressionArray.length-1] = expressionArray.at(-1).slice(0,index);
         else
-            expressionArray.at(-1) += ".";
+            expressionArray[expressionArray.length-1] += ".";
     }
     else
         expressionArray.push(new NumberClass(hasDecimal = true));
@@ -62,11 +67,64 @@ function parenthesisListener(symbol){
     updateBar();
 }
 function evaluateExpression(){
-    if (beginning === "(")
-        
+    function validateExpression(){
+        while (openParenthesisCount > 0){
+            openParenthesisCount--;
+            expressionArray.push(")");
+        }
+        for (let i = 0; i < expressionArray.length-1; i++)
+            if (expressionArray.at(i) === "(" && expressionArray.at(i+1) === ")"){
+                expressionArray.splice(i,2);
+                i = Math.max(0, i-2);
+            }
+        while (expressionArray.at(-1) !== ")" && !isFinite(expressionArray.at(-1)))
+            expressionArray.pop();
+    }
+    function evaluateAddSubtract(){
+        let leftTerm = evaluateDivMulti();
+        while (expressionArray.length > 0 && (expressionArray.at(0) === "+" || expressionArray.at(0) === "-")){
+            let operation = getTerm();
+            let rightTerm = evaluateDivMulti();
+            leftTerm = evaluate(leftTerm, operation, rightTerm);
+        }
+        return (leftTerm);
+    }
+    function evaluateDivMulti(){
+        let leftTerm = getTerm();
+        while (expressionArray.length > 0 && (expressionArray[0] === "*" || expressionArray[0] === "/" || expressionArray.at(0) === "(")){
+            let operation = getTerm();
+
+            if (isFinite(operation)){
+                expressionArray.unshift(operation);
+                operation = "*";
+                continue;
+            }
+
+            let rightTerm = getTerm();
+            leftTerm = evaluate(leftTerm, operation, rightTerm);
+        }
+        return (leftTerm);
+    }
+    function getTerm(){
+        let term = expressionArray.shift();
+        if (term === "("){
+            const result = evaluateExpression();
+
+            expressionArray.shift();
+            if (expressionArray.length > 0 && expressionArray.at(0) instanceof NumberClass)
+                expressionArray.unshift("*");
+
+            return (result);
+        }
+        return (term);
+    }
+    validateExpression()
+    const result = evaluateAddSubtract();
+    expressionArray.unshift(result.toString());
+    updateBar();
 }
 function updateBar(){
-    let bar = expressionArray.map(item => item instanceof NumberClass ? item.toString() : item).join("");
+    let bar = expressionArray.join("");
     document.getElementById("bar").textContent = bar;
 }
 function initialize(){
@@ -89,4 +147,5 @@ function initialize(){
 }
 window.onload = function() {
     initialize();
+    updateBar();
 };
