@@ -31,7 +31,7 @@ h1{
     box-sizing: border-box;
 }
 .Calculator-Buttons{
-    background: linear-gradient(to right bottom, red, yellow);
+    background: linear-gradient(to right bottom, rgb(255, 33, 33), rgb(255, 255, 14));
     aspect-ratio: 3 / 2;
     
     padding: 0;
