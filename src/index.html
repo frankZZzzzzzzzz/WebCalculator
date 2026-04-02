@@ -1,33 +1,39 @@
 <html>
     <head>
+        <link rel="stylesheet" href="Layout.css">
     </head>
     <body>
-        <h1 id="bar"></h1>
-        <!-- Number Buttons -->
-        <button id="1">1</button>
-        <button id="2">2</button>
-        <button id="3">3</button>
-        <button id="4">4</button>
-        <button id="5">5</button>
-        <button id="6">6</button>
-        <button id="7">7</button>
-        <button id="8">8</button>
-        <button id="9">9</button>
-        <button id="0">0</button>
-        <!-- Decimal and +/- -->
-        <button id="op+/-"> +/ -</button>
-        <button id="op.">.</button>
-        <!-- Operations -->
-        <button id="op+">+</button>
-        <button id="op-">-</button>
-        <button id="op*">*</button>
-        <button id="op/">/</button>
-        <!-- Parenthesis -->
-        <button id="op(">(</button>
-        <button id="op)">)</button>
-        <!-- Equal-->
-        <button id="op=">=</button>
+        <div id="Whole-Calculator">
+            <h1 id="bar"></h1>
+            <div id="Buttons">
+                <button class="Calculator-Buttons" id="btn-op-openParenthesis">(</button>
+                <button class="Calculator-Buttons" id="btn-op-closeParenthesis">)</button>
 
-        <script src="Calculator.js"></script>
+                <button class="Calculator-Buttons" id="btn-op-clear">CS</button>
+                <button class="Calculator-Buttons" id="btn-op-backspace">&lt;-</button>
+                <button class="Calculator-Buttons" id="btn-op-divide">/</button>
+                <button class="Calculator-Buttons" id="btn-op-multiply">*</button>
+
+                <button class="Calculator-Buttons" id="btn-number-7">7</button>
+                <button class="Calculator-Buttons" id="btn-number-8">8</button>
+                <button class="Calculator-Buttons" id="btn-number-9">9</button>
+                <button class="Calculator-Buttons" id="btn-op-subtract">-</button>
+
+                <button class="Calculator-Buttons" id="btn-number-4">4</button>
+                <button class="Calculator-Buttons" id="btn-number-5">5</button>
+                <button class="Calculator-Buttons" id="btn-number-6">6</button>
+                <button class="Calculator-Buttons" id="btn-op-add">+</button>
+
+                <button class="Calculator-Buttons" id="btn-number-1">1</button>
+                <button class="Calculator-Buttons" id="btn-number-2">2</button>
+                <button class="Calculator-Buttons" id="btn-number-3">3</button>
+                <button class="Calculator-Buttons" id="btn-op-equals">=</button>
+
+                <button class="Calculator-Buttons" id="btn-op-plus-minus"> +/-</button>
+                <button class="Calculator-Buttons" id="btn-number-0">0</button>
+                <button class="Calculator-Buttons" id="btn-op-decimal">.</button>
+            </div>
+            <script src="Calculator.js"></script>
+        </div>
     </body>
 </html>

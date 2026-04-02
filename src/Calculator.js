@@ -1,3 +1,6 @@
+const expressionArray = ["0"];
+window.openParenthesisCount = 0;
+
 function evaluate(left, operation, right){
     left = parseFloat(left);
     right = parseFloat(right);
@@ -8,18 +11,21 @@ function evaluate(left, operation, right){
         case "/": return (left / right);
     }
 }
-window.expressionArray = ["0"];
-window.openParenthesisCount = 0;
 
 function addNum(num){
     if (expressionArray.length === 0){
         expressionArray.push("0");
     }
     if (isFinite(expressionArray.at(-1))){
-        if (expressionArray.at(-1).length === 1 && expressionArray.at(-1).charAt(0) === "0")
-            expressionArray[expressionArray.length-1] = num.toString();
+        let lastIndex = expressionArray.length-1;
+
+        if (expressionArray[lastIndex] === "-0"){
+            expressionArray[lastIndex] = "-" + num.toString();
+        }
+        else if (expressionArray[lastIndex].length === 1 && expressionArray[lastIndex].charAt(0) === "0")
+            expressionArray[lastIndex] = num.toString();
         else
-            expressionArray[expressionArray.length-1] += num.toString();
+            expressionArray[lastIndex] += num.toString();
     }
     else{
         expressionArray.push(num.toString());
@@ -46,14 +52,20 @@ function decimalListener(){
             expressionArray[expressionArray.length-1] += ".";
     }
     else
-        expressionArray.push(new NumberClass(hasDecimal = true));
+        expressionArray.push("0.");
     updateBar()
 }
 function plusMinusListener(){
-    if (expressionArray.at(-1).at(0) === "-")
-        expressionArray[expressionArray.length-1] = expressionArray.at(-1).charAt(0);
+    let lastIndex = expressionArray.length-1;
+
+    if (isFinite(expressionArray[lastIndex])){
+        if (expressionArray[lastIndex].charAt(0) === "-")
+            expressionArray[lastIndex] = expressionArray[lastIndex].slice(1);
+        else
+            expressionArray[lastIndex] = "-" + expressionArray[lastIndex];
+    }
     else
-        expressionArray[expressionArray.length-1] = "-" + expressionArray.at(-1);
+        expressionArray.push("-0")
     updateBar()
 }
 function parenthesisListener(symbol){
@@ -63,65 +75,92 @@ function parenthesisListener(symbol){
         openParenthesisCount++;
     if (symbol === ")")
         openParenthesisCount--;
+    if (expressionArray.length === 1 && expressionArray[0] === "0")
+        expressionArray.pop();
     expressionArray.push(symbol);
     updateBar();
 }
+function validateExpression(){
+    while (openParenthesisCount > 0){
+        openParenthesisCount--;
+        expressionArray.push(")");
+    }
+    for (let i = 0; i < expressionArray.length-1; i++)
+        if (expressionArray.at(i) === "(" && expressionArray.at(i+1) === ")"){
+            expressionArray.splice(i,2);
+            i = Math.max(0, i-2);
+        }
+
+    while (expressionArray.at(-1) !== ")" && !isFinite(expressionArray.at(-1)))
+        expressionArray.pop();
+}
+function evaluateAddSubtract(){
+    let leftTerm = evaluateDivMulti();
+    while (expressionArray.length > 0 && (expressionArray.at(0) === "+" || expressionArray.at(0) === "-")){
+        let operation = getTerm();
+        let rightTerm = evaluateDivMulti();
+        leftTerm = evaluate(leftTerm, operation, rightTerm);
+    }
+    return (leftTerm);
+}
+function evaluateDivMulti(){
+    let leftTerm = getTerm();
+    while (expressionArray.length > 0 && (expressionArray[0] === "*" || expressionArray[0] === "/" || expressionArray.at(0) === "(")){
+        let operation = getTerm();
+
+        if (isFinite(operation)){
+            expressionArray.unshift(operation);
+            operation = "*";
+        }
+
+        let rightTerm = getTerm();
+        leftTerm = evaluate(leftTerm, operation, rightTerm);
+    }
+    return (leftTerm);
+}
+function getTerm(){
+    let term = expressionArray.shift();
+    if (term === "("){
+        const result = evaluateExpressionHelper();
+
+        expressionArray.shift();
+        if (expressionArray.length > 0 && isFinite(expressionArray.at(0)))
+            expressionArray.unshift("*");
+
+        return (result);
+    }
+    return (term);
+}
+function evaluateExpressionHelper(){
+    return (evaluateAddSubtract());
+}
 function evaluateExpression(){
-    function validateExpression(){
-        while (openParenthesisCount > 0){
-            openParenthesisCount--;
-            expressionArray.push(")");
-        }
-        for (let i = 0; i < expressionArray.length-1; i++)
-            if (expressionArray.at(i) === "(" && expressionArray.at(i+1) === ")"){
-                expressionArray.splice(i,2);
-                i = Math.max(0, i-2);
-            }
-        while (expressionArray.at(-1) !== ")" && !isFinite(expressionArray.at(-1)))
-            expressionArray.pop();
-    }
-    function evaluateAddSubtract(){
-        let leftTerm = evaluateDivMulti();
-        while (expressionArray.length > 0 && (expressionArray.at(0) === "+" || expressionArray.at(0) === "-")){
-            let operation = getTerm();
-            let rightTerm = evaluateDivMulti();
-            leftTerm = evaluate(leftTerm, operation, rightTerm);
-        }
-        return (leftTerm);
-    }
-    function evaluateDivMulti(){
-        let leftTerm = getTerm();
-        while (expressionArray.length > 0 && (expressionArray[0] === "*" || expressionArray[0] === "/" || expressionArray.at(0) === "(")){
-            let operation = getTerm();
-
-            if (isFinite(operation)){
-                expressionArray.unshift(operation);
-                operation = "*";
-                continue;
-            }
-
-            let rightTerm = getTerm();
-            leftTerm = evaluate(leftTerm, operation, rightTerm);
-        }
-        return (leftTerm);
-    }
-    function getTerm(){
-        let term = expressionArray.shift();
-        if (term === "("){
-            const result = evaluateExpression();
-
-            expressionArray.shift();
-            if (expressionArray.length > 0 && expressionArray.at(0) instanceof NumberClass)
-                expressionArray.unshift("*");
-
-            return (result);
-        }
-        return (term);
-    }
     validateExpression()
-    const result = evaluateAddSubtract();
+    const result = evaluate(evaluateAddSubtract(), "+", 0);
     expressionArray.unshift(result.toString());
     updateBar();
+}
+function backspace(){
+    let lastTerm = expressionArray.at(-1);
+
+    //"-#"
+    if (lastTerm.length === 2 && lastTerm.charAt(0) === "-")
+        return;
+
+    if (lastTerm.length === 1){
+        expressionArray.pop();
+        if (expressionArray.length === 0)
+            expressionArray.push("0");
+    }
+    else{
+        expressionArray[expressionArray.length-1] = expressionArray[expressionArray.length-1].slice(0,-1);
+    }
+    updateBar()
+}
+function clearExpression(){
+    expressionArray.length = 0;
+    expressionArray.push("0");
+    updateBar()
 }
 function updateBar(){
     let bar = expressionArray.join("");
@@ -130,20 +169,26 @@ function updateBar(){
 function initialize(){
     updateBar();
 
+    //Buttons 1-9
     for (let i = 0; i <= 9; i++)
-        document.getElementById(i.toString()).onclick = () => addNum(i);
+        document.getElementById("btn-number-" + i.toString()).onclick = () => addNum(i);
 
-    let operations = ["+","-","*","/"];
-    for (let i = 0; i < operations.length; i++)
-        document.getElementById("op" + operations.at(i)).onclick = ()=>operationListener(operations.at(i));
+    //Other Buttons
+    document.getElementById("btn-op-plus-minus").onclick = plusMinusListener;
+    document.getElementById("btn-op-decimal").onclick = decimalListener;
+    
+    document.getElementById("btn-op-add").onclick = ()=>operationListener("+");
+    document.getElementById("btn-op-subtract").onclick = ()=>operationListener("-");
+    document.getElementById("btn-op-multiply").onclick = ()=>operationListener("*");
+    document.getElementById("btn-op-divide").onclick = ()=>operationListener("/");
 
-    document.getElementById("op(").onclick = ()=>parenthesisListener("(");
-    document.getElementById("op)").onclick = ()=>parenthesisListener(")");
+    document.getElementById("btn-op-openParenthesis").onclick = ()=>parenthesisListener("(");
+    document.getElementById("btn-op-closeParenthesis").onclick = ()=>parenthesisListener(")");
+    
+    document.getElementById("btn-op-equals").onclick = evaluateExpression;
 
-    document.getElementById("op.").onclick = decimalListener;
-    document.getElementById("op+/-").onclick = plusMinusListener;
-
-    document.getElementById("op=").onclick = evaluateExpression;
+    document.getElementById("btn-op-clear").onclick = clearExpression;
+    document.getElementById("btn-op-backspace").onclick = backspace;
 }
 window.onload = function() {
     initialize();

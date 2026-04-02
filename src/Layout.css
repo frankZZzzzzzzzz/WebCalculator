@@ -1,0 +1,54 @@
+body{
+    background-color: lightgray;
+}
+#Whole-Calculator{
+    width: 100%;
+    max-width: 35rem;
+    margin: 0 auto 0 auto;
+    /*margin: 0 10rem 0 10rem;*/
+    background-color: aliceblue;
+    
+    border: .01rem solid black;
+}
+h1{
+    overflow: hidden;
+    white-space: nowrap;
+    direction: rtl;
+    text-align: left;
+
+    margin: 0;
+    padding: 1cqw;
+    font-size: 3.5cqw;
+    text-align: center;
+}
+#Buttons{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+
+    padding: 0;
+    margin: 0;
+    gap: .3cqw;
+    box-sizing: border-box;
+}
+.Calculator-Buttons{
+    background: linear-gradient(to right bottom, red, yellow);
+    aspect-ratio: 3 / 2;
+    
+    padding: 0;
+    border: none;
+    box-sizing: border-box;
+}
+
+/* Each Button */
+#btn-op-openParenthesis{
+    grid-column: span 2;
+    aspect-ratio: 3 / 1;
+}
+#btn-op-closeParenthesis{
+    grid-column: span 2;
+    aspect-ratio: 3 / 1;
+}
+#btn-op-equals{
+    grid-row: span 2;
+    aspect-ratio: auto;
+}
