@@ -10,16 +10,16 @@ body{
     
     border: .01rem solid black;
 }
-h1{
+#bar{
+    margin: 0;
+    padding: 1cqw;
+
+    font-size: 3.5cqw;
     overflow: hidden;
     white-space: nowrap;
     direction: rtl;
-    text-align: left;
-
-    margin: 0;
-    padding: 1cqw;
-    font-size: 3.5cqw;
     text-align: center;
+    unicode-bidi: plaintext;
 }
 #Buttons{
     display: grid;

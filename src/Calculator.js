@@ -164,6 +164,7 @@ function clearExpression(){
 }
 function updateBar(){
     let bar = expressionArray.join("");
+    console.log(bar);
     document.getElementById("bar").textContent = bar;
 }
 function initialize(){
