@@ -11,15 +11,20 @@ body{
     border: .01rem solid black;
 }
 #bar{
-    margin: 0;
     padding: 1cqw;
+    direction: rtl;
+    overflow: hidden;
+}
+#barText{
+    margin-left: auto;
+    max-width: 100%;
 
+    direction: ltr;
+    unicode-bidi: isolate;
     font-size: 3.5cqw;
     overflow: hidden;
     white-space: nowrap;
-    direction: rtl;
     text-align: center;
-    unicode-bidi: plaintext;
 }
 #Buttons{
     display: grid;
