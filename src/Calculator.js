@@ -91,6 +91,9 @@ function validateExpression(){
             i = Math.max(0, i-2);
         }
 
+    if (expressionArray.length === 0)
+        expressionArray.push('0');
+    
     while (expressionArray.at(-1) !== ")" && !isFinite(expressionArray.at(-1)))
         expressionArray.pop();
 }

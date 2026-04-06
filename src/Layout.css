@@ -11,7 +11,8 @@ body{
     border: .01rem solid black;
 }
 #bar{
-    padding: 1cqw;
+    height: 2.5em;
+    padding: 1em;
     direction: rtl;
     overflow: hidden;
 }
@@ -21,7 +22,7 @@ body{
 
     direction: ltr;
     unicode-bidi: isolate;
-    font-size: 3.5cqw;
+    font-size: 2.5em;
     overflow: hidden;
     white-space: nowrap;
     text-align: center;
@@ -42,6 +43,12 @@ body{
     padding: 0;
     border: none;
     box-sizing: border-box;
+}
+.Calculator-Buttons:hover{
+    background: linear-gradient(to right bottom, rgb(255, 60, 60), rgb(255, 255, 30));
+}
+.Calculator-Buttons:active{
+    background: linear-gradient(to right bottom, rgb(235, 33, 33), rgb(235, 235, 14));
 }
 
 /* Each Button */
